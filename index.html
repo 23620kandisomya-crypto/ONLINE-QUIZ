@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz App by KANSOMY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #0A1128;
+            --secondary-blue: #001F54;
+            --accent-blue: #034078;
+            --light-blue: #1282A2;
+            --pastel-light: #DBE4EE;
+            --pastel-gradient-start: #C5D8F0;
+            --pastel-gradient-end: #E0EBF8;
+            --text-dark: #333;
+            --text-light: #f4f4f4;
+            --success-green: #28a745;
+            --error-red: #dc3545;
+            --warning-orange: #ffc107;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, var(--pastel-gradient-start) 0%, var(--pastel-gradient-end) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards ease-out;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            background: linear-gradient(45deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+            color: var(--text-light);
+            padding: 20px 40px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 2em;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ADD8E6, #87CEEB); /* Light blue gradient for logo text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .music-toggle {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: var(--text-light);
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .music-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .music-toggle .icon {
+            font-size: 1.2em;
+        }
+
+        .homepage-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .category-card {
+            background-color: var(--pastel-light);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            width: calc(50% - 25px);
+            min-width: 300px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .category-card h3 {
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light-blue);
+            padding-bottom: 10px;
+        }
+
+        .level-section {
+            margin-bottom: 20px;
+        }
+
+        .level-section h4 {
+            color: var(--secondary-blue);
+            margin-bottom: 10px;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .start-quiz-button {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            background: linear-gradient(45deg, var(--light-blue) 0%, var(--accent-blue) 100%);
+            color: var(--text-light);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .start-quiz-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .quiz-page, .results-page, .feedback-page {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: var(--pastel-light);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 15px;
+            margin-top: 15px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--light-blue), var(--accent-blue));
+            border-radius: 10px;
+            transition: width 0.4s ease-out;
+        }
+
+        .question-content {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: var(--pastel-gradient-end);
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .question-media {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .option-button, .true-false-button {
+            background-color: #fff;
+            border: 2px solid var(--pastel-gradient-start);
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .option-button:hover, .true-false-button:hover {
+            background-color: var(--pastel-light);
+            border-color: var(--light-blue);
+            transform: translateY(-2px);
+        }
+
+        .option-button.selected, .true-false-button.selected {
+            background-color: var(--light-blue);
+            color: var(--text-light);
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .option-button.correct, .true-false-button.correct {
+            background-color: var(--success-green);
+            color: white;
+            border-color: var(--success-green);
+            animation: pulseCorrect 0.5s ease-out;
+        }
+
+        .option-button.incorrect, .true-false-button.incorrect {
+            background-color: var(--error-red);
+            color: white;
+            border-color: var(--error-red);
+        }
+
+        .option-button.correct::after, .true-false-button.correct::after {
+            content: '✓';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+        }
+
+        .option-button.incorrect::after, .true-false-button.incorrect::after {
+            content: '✕';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+        }
+
+        @keyframes pulseCorrect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .fill-in-the-blank-input {
+            width: calc(100% - 40px);
+            padding: 15px 20px;
+            border: 2px solid var(--pastel-gradient-start);
+            border-radius: 10px;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+
+        .fill-in-the-blank-input:focus {
+            outline: none;
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 3px rgba(18, 130, 162, 0.3);
+        }
+
+        .matching-pair {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            background-color: #f8faff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--pastel-light);
+        }
+
+        .matching-pair span {
+            font-weight: 500;
+            color: var(--secondary-blue);
+        }
+
+        .matching-pair select {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--pastel-gradient-start);
+            background-color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95em;
+            color: var(--text-dark);
+            flex-grow: 1;
+            max-width: 50%;
+        }
+
+        .matching-pair select:focus {
+            outline: none;
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 2px rgba(18, 130, 162, 0.2);
+        }
+
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-navigation button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-navigation button.prev {
+            background-color: var(--pastel-light);
+            color: var(--primary-blue);
+        }
+
+        .quiz-navigation button.next {
+            background: linear-gradient(45deg, var(--light-blue) 0%, var(--accent-blue) 100%);
+            color: var(--text-light);
+        }
+
+        .quiz-navigation button.submit {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .quiz-navigation button.back {
+            background-color: var(--error-red);
+            color: white;
+        }
+
+        .quiz-navigation button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--error-red);
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .timer.hidden {
+            display: none;
+        }
+
+        .results-summary {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--pastel-light), var(--pastel-gradient-end));
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .results-summary h2 {
+            color: var(--accent-blue);
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .results-summary p {
+            font-size: 1.1em;
+            color: var(--secondary-blue);
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+
+        .feedback-section {
+            background-color: var(--pastel-light);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+        }
+
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .feedback-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--pastel-gradient-start);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        .feedback-form textarea:focus {
+            outline: none;
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 3px rgba(18, 130, 162, 0.3);
+        }
+
+        .feedback-form button {
+            background: linear-gradient(45deg, var(--light-blue) 0%, var(--accent-blue) 100%);
+            color: var(--text-light);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            align-self: flex-end;
+        }
+
+        .feedback-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .feedback-display h4 {
+            color: var(--secondary-blue);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--pastel-gradient-start);
+            padding-bottom: 10px;
+        }
+
+        .feedback-item {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--light-blue);
+        }
+
+        .feedback-item p {
+            margin: 0;
+            font-size: 0.95em;
+            color: var(--text-dark);
+        }
+
+        .feedback-item small {
+            display: block;
+            text-align: right;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .results-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .results-actions button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-actions .home-button {
+            background-color: var(--accent-blue);
+            color: white;
+        }
+
+        .results-actions .download-button {
+            background-color: var(--warning-orange);
+            color: white;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--primary-blue);
+            text-align: center;
+            font-size: 0.9em;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards ease-out 0.3s;
+        }
+
+        /* Accessibility (ARIA & Keyboard Navigation) */
+        button, a, input[type="text"], select, textarea {
+            transition: outline 0.2s ease;
+        }
+
+        button:focus, a:focus, input[type="text"]:focus, select:focus, textarea:focus {
+            outline: 3px solid var(--light-blue);
+            outline-offset: 2px;
+        }
+
+        [aria-current="page"] {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 1.8em;
+                margin-bottom: 15px;
+            }
+
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .category-card {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .subject-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+
+            .quiz-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .quiz-navigation {
+                flex-direction: column;
+            }
+
+            .quiz-navigation button {
+                width: 100%;
+            }
+
+            .chart-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .option-button, .true-false-button, .fill-in-the-blank-input {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+
+            .question-text {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.5em;
+            }
+            .container {
+                padding: 15px;
+            }
+            .quiz-navigation button {
+                font-size: 0.9em;
+                padding: 10px 15px;
+            }
+            .results-summary h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="click-sound">
+        <source src="https://www.soundjay.com/buttons/button-10.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="container" role="main">
+        <header role="banner">
+            <h1 class="logo" aria-label="Online Quiz by KANSOMY">ONLINE QUIZ by KANSOMY</h1>
+            <button id="music-toggle" class="music-toggle" aria-label="Toggle background music">
+                <span class="icon">🎵</span> <span id="music-status">Music Off</span>
+            </button>
+        </header>
+
+        <section id="homepage" class="homepage-section" aria-live="polite">
+            <h2 class="sr-only">Quiz Categories</h2>
+
+            <div class="category-card" role="region" aria-labelledby="school-level-heading">
+                <h3 id="school-level-heading">School Level</h3>
+                <div class="level-section">
+                    <h4>Basic</h4>
+                    <div class="subject-grid">
+                        <button class="start-quiz-button" data-category="school" data-level="basic" data-subject="english" aria-label="Start English Basic Quiz">English</button>
+                        <button class="start-quiz-button" data-category="school" data-level="basic" data-subject="science" aria-label="Start Science Basic Quiz">Science</button>
+                        <button class="start-quiz-button" data-category="school" data-level="basic" data-subject="math" aria-label="Start Math Basic Quiz">Math</button>
+                        <button class="start-quiz-button" data-category="school" data-level="basic" data-subject="social" aria-label="Start Social Basic Quiz">Social</button>
+                        <button class="start-quiz-button" data-category="school" data-level="basic" data-subject="general_knowledge" aria-label="Start General Knowledge Basic Quiz">GK</button>
+                    </div>
+                </div>
+                <div class="level-section">
+                    <h4>Medium</h4>
+                    <div class="subject-grid">
+                        <button class="start-quiz-button" data-category="school" data-level="medium" data-subject="english" aria-label="Start English Medium Quiz">English</button>
+                        <button class="start-quiz-button" data-category="school" data-level="medium" data-subject="science" aria-label="Start Science Medium Quiz">Science</button>
+                        <button class="start-quiz-button" data-category="school" data-level="medium" data-subject="math" aria-label="Start Math Medium Quiz">Math</button>
+                        <button class="start-quiz-button" data-category="school" data-level="medium" data-subject="social" aria-label="Start Social Medium Quiz">Social</button>
+                        <button class="start-quiz-button" data-category="school" data-level="medium" data-subject="general_knowledge" aria-label="Start General Knowledge Medium Quiz">GK</button>
+                    </div>
+                </div>
+                <div class="level-section">
+                    <h4>Hard</h4>
+                    <div class="subject-grid">
+                        <button class="start-quiz-button" data-category="school" data-level="hard" data-subject="english" aria-label="Start English Hard Quiz">English</button>
+                        <button class="start-quiz-button" data-category="school" data-level="hard" data-subject="science" aria-label="Start Science Hard Quiz">Science</button>
+                        <button class="start-quiz-button" data-category="school" data-level="hard" data-subject="math" aria-label="Start Math Hard Quiz">Math</button>
+                        <button class="start-quiz-button" data-category="school" data-level="hard" data-subject="social" aria-label="Start Social Hard Quiz">Social</button>
+                        <button class="start-quiz-button" data-category="school" data-level="hard" data-subject="general_knowledge" aria-label="Start General Knowledge Hard Quiz">GK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-card" role="region" aria-labelledby="advanced-level-heading">
+                <h3 id="advanced-level-heading">Advanced Level</h3>
+                <div class="level-section">
+                    <h4>Basic</h4>
+                    <div class="subject-grid">
+                        <button class="start-quiz-button" data-category="advanced" data-level="basic" data-subject="computer_science" aria-label="Start Computer Science Basic Quiz">CS</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="basic" data-subject="ai" aria-label="Start AI Basic Quiz">AI</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="basic" data-subject="robotics" aria-label="Start Robotics Basic Quiz">Robotics</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="basic" data-subject="data_science" aria-label="Start Data Science Basic Quiz">Data Sci</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="basic" data-subject="engineering" aria-label="Start Engineering Basic Quiz">Eng</button>
+                    </div>
+                </div>
+                <div class="level-section">
+                    <h4>Medium</h4>
+                    <div class="subject-grid">
+                        <button class="start-quiz-button" data-category="advanced" data-level="medium" data-subject="computer_science" aria-label="Start Computer Science Medium Quiz">CS</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="medium" data-subject="ai" aria-label="Start AI Medium Quiz">AI</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="medium" data-subject="robotics" aria-label="Start Robotics Medium Quiz">Robotics</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="medium" data-subject="data_science" aria-label="Start Data Science Medium Quiz">Data Sci</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="medium" data-subject="engineering" aria-label="Start Engineering Medium Quiz">Eng</button>
+                    </div>
+                </div>
+                <div class="level-section">
+                    <h4>Hard</h4>
+                    <div class="subject-grid">
+                        <button class="start-quiz-button" data-category="advanced" data-level="hard" data-subject="computer_science" aria-label="Start Computer Science Hard Quiz">CS</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="hard" data-subject="ai" aria-label="Start AI Hard Quiz">AI</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="hard" data-subject="robotics" aria-label="Start Robotics Hard Quiz">Robotics</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="hard" data-subject="data_science" aria-label="Start Data Science Hard Quiz">Data Sci</button>
+                        <button class="start-quiz-button" data-category="advanced" data-level="hard" data-subject="engineering" aria-label="Start Engineering Hard Quiz">Eng</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz-page" class="quiz-page" aria-live="polite">
+            <div class="quiz-header">
+                <h2 id="quiz-title">Quiz: <span id="current-quiz-subject"></span> (<span id="current-quiz-level"></span>)</h2>
+                <div class="timer hidden" aria-label="Time remaining">
+                    <span aria-hidden="true">⏱️</span><span id="time-left">00:00</span>
+                </div>
+                <div class="progress-info" aria-live="polite">Question <span id="current-question-num">1</span> of <span id="total-questions">5</span></div>
+                <div class="progress-bar-container" role="progressbar" aria-valuenow
